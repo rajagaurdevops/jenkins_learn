@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "jenkins-maven" and add it to the path.
+        maven "jenkins-maven"
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                // Get some code from a GitHub repository
+                git 'https://github.com/jenkins-docs/simple-java-maven-app.git'
+            }
+        }
+        stage('build') {
+            steps {
+                // Clean and build the Maven project
+                sh 'mvn clean package'
+            }
+            post {
+                always {
+                    // Publish the JUnit test reports
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                }
+            }
+        }
+        stage('test') {
+            steps {
+                // Run tests using Maven
+                sh 'mvn test'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Simulated deploy step
+                sh 'echo deployed'
+            }
+        }
+    }
+}
